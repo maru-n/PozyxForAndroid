@@ -1,5 +1,8 @@
 # StargazerForAndroid
 
+## Install Sample App
+https://github.com/maru-n/StargazerForAndroid/raw/master/app/app-release.apk
+
 ## Library Usage
 
 ### Installation
