@@ -23,3 +23,15 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.hoho.android:usb-serial-for-android:0.2.0-SNAPSHOT@aar'
 }
+
+apply plugin: 'maven'
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository url: "file://${project.rootDir}/repository"
+            pom.version = "0.0.1"
+            pom.groupId = "jp.co.mti.marun.android.stargazer"
+            pom.artifactId = "stargazer-for-android"
+        }
+    }
+}
