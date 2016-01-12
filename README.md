@@ -25,7 +25,7 @@ app/build.gradle
 ```diff
  dependencies {
      ...
-+    compile('jp.co.mti.marun.android:stargazer-for-android:+')
++    compile 'jp.co.mti.marun.android:stargazer-for-android:+' 
      ...
  }
 ```
