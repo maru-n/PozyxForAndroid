@@ -30,7 +30,7 @@ uploadArchives {
         mavenDeployer {
             repository url: "file://${project.rootDir}/repository"
             pom.version = "0.0.1"
-            pom.groupId = "jp.co.mti.marun.android.stargazer"
+            pom.groupId = "jp.co.mti.marun.android"
             pom.artifactId = "stargazer-for-android"
         }
     }
