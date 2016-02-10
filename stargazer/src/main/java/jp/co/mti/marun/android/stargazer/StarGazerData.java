@@ -6,17 +6,25 @@ import java.util.regex.Pattern;
 /**
  * Created by maruyama_n on 2015/12/18.
  */
-public class StarGazerData extends NavigationData {
-    public final String rawDataString;
-
+public class StarGazerData {
+    public long time;
+    public float angle;
+    public float x;
+    public float y;
+    public float z;
     public int markerId;
     public boolean isDeadZone = false;
+    public String rawDataString;
 
     private static final Pattern DataPattern = Pattern.compile("~\\^I([0-9]+)\\|([\\+\\-][0-9]+\\.?[0-9]+)\\|([\\+\\-][0-9]+\\.?[0-9]+)\\|([\\+\\-][0-9]+\\.?[0-9]+)\\|([0-9]+\\.?[0-9]+)`");
     private static final Pattern DeadZonePattern = Pattern.compile("~\\*DeadZone`");
 
-    public StarGazerData(String rawData) throws StarGazerException {
+    public StarGazerData(){
         this.time = System.currentTimeMillis();
+    }
+
+    public StarGazerData(String rawData) throws StarGazerException {
+        this();
         this.rawDataString = rawData;
         Matcher m = DataPattern.matcher(rawData);
         if (m.find()) {

@@ -21,9 +21,7 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     private Paint mPositionPaint, mTrackPaint, mGridPaint, mAxisXPaint, mAxisYPaint;
     private SurfaceHolder mHolder;
     private Thread mLooper;
-    private LinkedList<NavigationData> mNavDataList;
-
-    private static final boolean NO_INPUT_DATA_DEBUG = false;
+    private LinkedList<StarGazerData> mDataList;
 
     private static final int MAX_TRACK_DATA = 300;
     private static final int   GRID_UNIT_PIXEL = 100;
@@ -63,14 +61,14 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
         mAxisYPaint = new Paint();
         mAxisYPaint.setColor(Color.GREEN);
         mAxisYPaint.setStrokeWidth(5);
-        mNavDataList = new LinkedList<NavigationData>();
+        mDataList = new LinkedList<StarGazerData>();
     }
 
-    public void setCurrentPoint(NavigationData data) {
-        synchronized(mNavDataList) {
-            mNavDataList.add(data);
-            if (mNavDataList.size() > MAX_TRACK_DATA) {
-                mNavDataList.removeFirst();
+    public void setCurrentPoint(StarGazerData data) {
+        synchronized(mDataList) {
+            mDataList.add(data);
+            if (mDataList.size() > MAX_TRACK_DATA) {
+                mDataList.removeFirst();
             }
         }
     }
@@ -97,13 +95,6 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     @Override
     public void run() {
         while (mLooper != null) {
-            if (NO_INPUT_DATA_DEBUG) {
-                if (mNavDataList.isEmpty()) {
-                    this.setCurrentPoint(new NavigationDataDebug());
-                } else {
-                    this.setCurrentPoint(new NavigationDataDebug(mNavDataList.getLast()));
-                }
-            }
             draw();
         }
     }
@@ -127,11 +118,11 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
         canvas.drawLine(centerX, centerY, centerX + GRID_UNIT_PIXEL, centerY, mAxisXPaint);
         canvas.drawLine(centerX, centerY, centerX, centerY - GRID_UNIT_PIXEL, mAxisYPaint);
 
-        synchronized (mNavDataList) {
-            Iterator<NavigationData> iterator = mNavDataList.iterator();
+        synchronized (mDataList) {
+            Iterator<StarGazerData> iterator = mDataList.iterator();
             while (iterator.hasNext()) {
-                NavigationData d = iterator.next();
-                if (d.equals(mNavDataList.getLast())) {
+                StarGazerData d = iterator.next();
+                if (d.equals(mDataList.getLast())) {
                     canvas.drawCircle(centerX + convertMeter2Pixel(d.x), centerY - convertMeter2Pixel(d.y), POSITION_MARKER_RADIUS, mPositionPaint);
                 } else {
                     canvas.drawCircle(centerX + convertMeter2Pixel(d.x), centerY - convertMeter2Pixel(d.y), TRACK_MARKER_RADIUS, mTrackPaint);

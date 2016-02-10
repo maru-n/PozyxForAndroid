@@ -65,6 +65,7 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
         }
     };
 
+    public StarGazerManager() {}
 
     public StarGazerManager(Context context) {
         mUsbManager = (UsbManager) context.getSystemService(context.USB_SERVICE);
@@ -150,13 +151,13 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
         executor.submit(mSerialIoManager);
     }
 
-    private void callOnNewDataListener(StarGazerData d) {
+    protected void callOnNewDataListener(StarGazerData d) {
         if (mListener != null) {
             mListener.onNewData(this, d);
         }
     }
 
-    private void callOnErrorListener(StarGazerException e) {
+    protected void callOnErrorListener(StarGazerException e) {
         if (mListener != null) {
             mListener.onError(this, e);
         }
