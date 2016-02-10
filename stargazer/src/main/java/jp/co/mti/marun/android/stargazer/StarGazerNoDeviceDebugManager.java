@@ -10,6 +10,12 @@ public class StarGazerNoDeviceDebugManager extends StarGazerManager implements R
     private Handler mHandler = new Handler();
     private StarGazerData mPreviousData = null;
 
+    // Lorenz atractor parameters
+    private static float p = 10;
+    private static float r = 28;
+    private static float b = (float) (8.0 / 3.0);
+    private static float scale = (float) 0.2;
+
 
     public StarGazerNoDeviceDebugManager() {
     }
@@ -26,12 +32,30 @@ public class StarGazerNoDeviceDebugManager extends StarGazerManager implements R
     public void run() {
         StarGazerData data;
         if (mPreviousData == null) {
-            data = new StarGazerVirtualData();
+            data = new StarGazerData();
+            data.x = (float) Math.random();
+            data.y = (float) Math.random();
+            data.z = (float) Math.random();
         } else {
-            data = StarGazerVirtualData.generateNextData(mPreviousData);
+            data = this.generateNextData(mPreviousData);
         }
         callOnNewDataListener(data);
         mPreviousData = data;
         mHandler.postDelayed(this, DELAY);
+    }
+
+    private static StarGazerData generateNextData(StarGazerData previousData) {
+        StarGazerData data = new StarGazerData();
+        float preX = previousData.x / scale;
+        float preY = previousData.y / scale;
+        float preZ = previousData.z / scale;
+        float dt = (float) ((data.time - previousData.time) * 0.00005);
+        data.x = preX + dt * (-p * preX + p * preY);
+        data.y = preY + dt * (-preX * preZ + r * preX - preY);
+        data.z = preZ + dt * (preX * preY - b * preZ);
+        data.x *= scale;
+        data.y *= scale;
+        data.z *= scale;
+        return data;
     }
 }
