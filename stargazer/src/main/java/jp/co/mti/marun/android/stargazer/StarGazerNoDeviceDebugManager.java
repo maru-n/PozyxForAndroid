@@ -5,14 +5,14 @@ import android.os.Handler;
 /**
  * Created by maruyama_n on 2016/02/10.
  */
-public class StarGazerNoDeviceDebugManager extends StarGazerManager implements Runnable {
+public class StargazerNoDeviceDebugManager extends StargazerManager implements Runnable {
     public static final int TS_LORENZ = 1;
     public static final int TS_RW     = 2;
 
     private int timeSeriesType;
     private static final int DELAY = 100;
     private Handler mHandler = new Handler();
-    private StarGazerData mPreviousData = null;
+    private StargazerData mPreviousData = null;
 
     // Lorenz attractor parameters
     private static final double p = 10;
@@ -24,7 +24,7 @@ public class StarGazerNoDeviceDebugManager extends StarGazerManager implements R
     private static final double step_len = 0.1;
 
 
-    public StarGazerNoDeviceDebugManager(int timeSeriesType) {
+    public StargazerNoDeviceDebugManager(int timeSeriesType) {
         this.timeSeriesType = timeSeriesType;
     }
 
@@ -38,26 +38,26 @@ public class StarGazerNoDeviceDebugManager extends StarGazerManager implements R
 
     @Override
     public void run() {
-        StarGazerData data;
+        StargazerData data;
         data = this.generateNextData(mPreviousData);
         callOnNewDataListener(data);
         mPreviousData = data;
         mHandler.postDelayed(this, DELAY);
     }
 
-    private StarGazerData generateNextData(StarGazerData previousData) {
+    private StargazerData generateNextData(StargazerData previousData) {
         switch (this.timeSeriesType) {
-            case StarGazerNoDeviceDebugManager.TS_LORENZ:
+            case StargazerNoDeviceDebugManager.TS_LORENZ:
                 return generateLorenzAttractor(previousData);
-            case StarGazerNoDeviceDebugManager.TS_RW:
+            case StargazerNoDeviceDebugManager.TS_RW:
                 return generateRandomWalk(previousData);
             default:
-                return new StarGazerData();
+                return new StargazerData();
         }
     }
 
-    private static StarGazerData generateLorenzAttractor(StarGazerData previousData) {
-        StarGazerData data = new StarGazerData();
+    private static StargazerData generateLorenzAttractor(StargazerData previousData) {
+        StargazerData data = new StargazerData();
         if (previousData == null) {
             data.x = Math.random();
             data.y = Math.random();
@@ -77,8 +77,8 @@ public class StarGazerNoDeviceDebugManager extends StarGazerManager implements R
         return data;
     }
 
-    private static StarGazerData generateRandomWalk(StarGazerData previousData) {
-        StarGazerData data = new StarGazerData();
+    private static StargazerData generateRandomWalk(StargazerData previousData) {
+        StargazerData data = new StargazerData();
         if (previousData == null) {
             data.x = 0.0;
             data.y = 0.0;

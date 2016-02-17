@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 /**
  * Created by maruyama_n on 2015/12/21.
  */
-public class StarGazerManager implements SerialInputOutputManager.Listener {
+public class StargazerManager implements SerialInputOutputManager.Listener {
 
     private static final String ACTION_USB_PERMISSION = "jp.co.mti.marun.stargazer.USB_PERMISSION";
     private static final int BAUD_RATE = 115200;
@@ -36,7 +36,7 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
     private UsbManager mUsbManager = null;
     private PendingIntent mPermissionIntent;
     private SerialInputOutputManager mSerialIoManager = null;
-    private StarGazerListener mListener = null;
+    private StargazerListener mListener = null;
     private StringBuffer buffer = new StringBuffer();
 
     private final BroadcastReceiver mUsbPermissionReceiver = new BroadcastReceiver() {
@@ -49,25 +49,25 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
                         UsbSerialDriver driver = UsbSerialProber.getDefaultProber().probeDevice(device);
                         UsbSerialPort port = driver.getPorts().get(0);
                         try {
-                            StarGazerManager.this.openSerialIOPort(port);
-                        } catch (StarGazerException e) {
+                            StargazerManager.this.openSerialIOPort(port);
+                        } catch (StargazerException e) {
                             Log.w(TAG, e.getMessage());
                         }
                     }
                     else {
-                        StarGazerManager.this.callOnErrorListener(new StarGazerException("permission denied for device " + device));
+                        StargazerManager.this.callOnErrorListener(new StargazerException("permission denied for device " + device));
                     }
                 }
             } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-                StarGazerManager.this.connect();
+                StargazerManager.this.connect();
             } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
             }
         }
     };
 
-    public StarGazerManager() {}
+    public StargazerManager() {}
 
-    public StarGazerManager(Context context) {
+    public StargazerManager(Context context) {
         mUsbManager = (UsbManager) context.getSystemService(context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter();
@@ -81,7 +81,7 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
         UsbSerialPort port = null;
         try {
             port = findDefaultPort();
-        } catch (StarGazerException e) {
+        } catch (StargazerException e) {
             this.callOnErrorListener(e);
             return;
         }
@@ -89,7 +89,7 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
         if (mUsbManager.hasPermission(device)) {
             try {
                 openSerialIOPort(port);
-            } catch (StarGazerException e) {
+            } catch (StargazerException e) {
                 this.callOnErrorListener(e);
             }
         } else {
@@ -103,7 +103,7 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
         }
     }
 
-    public void setListener(StarGazerListener listener) {
+    public void setListener(StargazerListener listener) {
         mListener = listener;
     }
 
@@ -111,10 +111,10 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
         mListener = null;
     }
 
-    private UsbSerialPort findDefaultPort() throws StarGazerException {
+    private UsbSerialPort findDefaultPort() throws StargazerException {
         List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(mUsbManager);
         if (availableDrivers.isEmpty()) {
-            StarGazerException e = new StarGazerException("no available drivers.");
+            StargazerException e = new StargazerException("no available drivers.");
             Log.d(TAG, e.getMessage());
             throw e;
         }
@@ -125,10 +125,10 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
         return port;
     }
 
-    private void openSerialIOPort(UsbSerialPort port) throws StarGazerException {
+    private void openSerialIOPort(UsbSerialPort port) throws StargazerException {
         UsbDeviceConnection connection = mUsbManager.openDevice(port.getDriver().getDevice());
         if (connection == null) {
-            StarGazerException e = new StarGazerException("Opening device failed.");
+            StargazerException e = new StargazerException("Opening device failed.");
             throw e;
         }
 
@@ -139,9 +139,9 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
             try {
                 port.close();
             } catch (IOException e2) {
-                throw new StarGazerException(e2);
+                throw new StargazerException(e2);
             }
-            throw new StarGazerException(e);
+            throw new StargazerException(e);
         }
         Log.d(TAG, "Serial device: " + port.getClass().getSimpleName());
 
@@ -151,16 +151,20 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
         executor.submit(mSerialIoManager);
     }
 
-    protected void callOnNewDataListener(StarGazerData d) {
+    protected void callOnNewDataListener(StargazerData d) {
         if (mListener != null) {
             mListener.onNewData(this, d);
         }
     }
 
-    protected void callOnErrorListener(StarGazerException e) {
+    protected void callOnErrorListener(StargazerException e) {
         if (mListener != null) {
             mListener.onError(this, e);
         }
+    }
+
+    protected StargazerData makeStarGazerDataByOutput(String outputData) throws StargazerException {
+        return new StargazerData(outputData);
     }
 
     @Override
@@ -172,9 +176,9 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
         while (m.find()) {
             final String line = m.group();
             try {
-                final StarGazerData data = new StarGazerData(line);
+                final StargazerData data = this.makeStarGazerDataByOutput(line);
                 callOnNewDataListener(data);
-            } catch (StarGazerException e) {
+            } catch (StargazerException e) {
                 callOnErrorListener(e);
             }
             lastMatchIndex = m.end();
@@ -185,7 +189,7 @@ public class StarGazerManager implements SerialInputOutputManager.Listener {
     @Override
     public void onRunError(Exception e) {
         Log.d(TAG, "Runner stopped.");
-        StarGazerException sge = new StarGazerException("SerialInputOutputManager error.", e);
+        StargazerException sge = new StargazerException("SerialInputOutputManager error.", e);
         callOnErrorListener(sge);
     }
 }

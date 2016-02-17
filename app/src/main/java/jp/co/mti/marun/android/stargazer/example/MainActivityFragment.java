@@ -23,11 +23,11 @@ import java.util.Calendar;
 import jp.co.mti.marun.android.stargazer.*;
 
 
-public class MainActivityFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, StarGazerListener {
+public class MainActivityFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, StargazerListener {
 
     private final String TAG = this.getClass().getSimpleName();
 
-    private StarGazerManager mStargazerManager;
+    private StargazerManager mStargazerManager;
     private TextView mRawDataTextView;
     private TextView mDataTextview;
     private Switch mLoggingSwitch;
@@ -84,7 +84,7 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
     }
 
     @Override
-    public void onNewData(StarGazerManager sm, final StarGazerData data) {
+    public void onNewData(StargazerManager sm, final StargazerData data) {
         try {
             if (mLogWriter != null) {
                 mLogWriter.write(data.toLogString());
@@ -106,7 +106,7 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
     }
 
     @Override
-    public void onError(StarGazerManager sm, StarGazerException e) {
+    public void onError(StargazerManager sm, StargazerException e) {
         Log.e(TAG, e.getMessage());
     }
 

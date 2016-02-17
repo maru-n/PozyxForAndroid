@@ -11,7 +11,7 @@ import android.view.SurfaceView;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import jp.co.mti.marun.android.stargazer.StarGazerData;
+import jp.co.mti.marun.android.stargazer.StargazerData;
 
 /**
  * Created by maruyama_n on 2015/12/18.
@@ -21,7 +21,7 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     private Paint mPositionPaint, mTrackPaint, mGridPaint, mAxisXPaint, mAxisYPaint;
     private SurfaceHolder mHolder;
     private Thread mLooper;
-    private LinkedList<StarGazerData> mDataList;
+    private LinkedList<StargazerData> mDataList;
 
     private static final int MAX_TRACK_DATA = 300;
     private static final int   GRID_UNIT_PIXEL = 100;
@@ -61,10 +61,10 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
         mAxisYPaint = new Paint();
         mAxisYPaint.setColor(Color.GREEN);
         mAxisYPaint.setStrokeWidth(5);
-        mDataList = new LinkedList<StarGazerData>();
+        mDataList = new LinkedList<StargazerData>();
     }
 
-    public void setCurrentPoint(StarGazerData data) {
+    public void setCurrentPoint(StargazerData data) {
         synchronized(mDataList) {
             mDataList.add(data);
             if (mDataList.size() > MAX_TRACK_DATA) {
@@ -119,9 +119,9 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
         canvas.drawLine(centerX, centerY, centerX, centerY - GRID_UNIT_PIXEL, mAxisYPaint);
 
         synchronized (mDataList) {
-            Iterator<StarGazerData> iterator = mDataList.iterator();
+            Iterator<StargazerData> iterator = mDataList.iterator();
             while (iterator.hasNext()) {
-                StarGazerData d = iterator.next();
+                StargazerData d = iterator.next();
                 if (d.equals(mDataList.getLast())) {
                     canvas.drawCircle(centerX + convertMeter2Pixel(d.x), centerY - convertMeter2Pixel(d.y), POSITION_MARKER_RADIUS, mPositionPaint);
                 } else {

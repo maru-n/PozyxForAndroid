@@ -3,7 +3,7 @@ package jp.co.mti.marun.android.stargazer;
 /**
  * Created by maruyama_n on 2015/12/21.
  */
-public interface StarGazerListener {
-    void onNewData(StarGazerManager sm, final StarGazerData data);
-    void onError(StarGazerManager sm, final StarGazerException e);
+public interface StargazerListener {
+    void onNewData(StargazerManager sm, final StargazerData data);
+    void onError(StargazerManager sm, final StargazerException e);
 }

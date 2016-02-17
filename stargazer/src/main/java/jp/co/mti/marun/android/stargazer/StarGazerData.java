@@ -1,12 +1,13 @@
 package jp.co.mti.marun.android.stargazer;
 
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Created by maruyama_n on 2015/12/18.
  */
-public class StarGazerData {
+public class StargazerData {
     public long time;
     public double angle;
     public double x;
@@ -16,17 +17,20 @@ public class StarGazerData {
     public boolean isDeadZone = false;
     public String rawDataString;
 
-    private static final Pattern DataPattern = Pattern.compile("~\\^I([0-9]+)\\|([\\+\\-][0-9]+\\.?[0-9]+)\\|([\\+\\-][0-9]+\\.?[0-9]+)\\|([\\+\\-][0-9]+\\.?[0-9]+)\\|([0-9]+\\.?[0-9]+)`");
+    private static final String DataPattern = "([0-9]+)\\|([\\+\\-][0-9]+\\.?[0-9]+)\\|([\\+\\-][0-9]+\\.?[0-9]+)\\|([\\+\\-][0-9]+\\.?[0-9]+)\\|([0-9]+\\.?[0-9]+)";
+    private static final Pattern SingleIDDataPattern = Pattern.compile("~\\^I"+DataPattern+"`");
+    private static final Pattern MultiIDDataPattern1 = Pattern.compile("~\\^1"+DataPattern+"`");
+    private static final Pattern MultiIDDataPattern2 = Pattern.compile("~\\^2"+DataPattern+"\\|"+DataPattern+"`");
     private static final Pattern DeadZonePattern = Pattern.compile("~\\*DeadZone`");
 
-    public StarGazerData(){
+    public StargazerData(){
         this.time = System.currentTimeMillis();
     }
 
-    public StarGazerData(String rawData) throws StarGazerException {
+    public StargazerData(String rawData) throws StargazerException {
         this();
         this.rawDataString = rawData;
-        Matcher m = DataPattern.matcher(rawData);
+        Matcher m = SingleIDDataPattern.matcher(rawData);
         if (m.find()) {
             this.markerId = Integer.parseInt(m.group(1));
             this.angle = Float.parseFloat(m.group(2));
