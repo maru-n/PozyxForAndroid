@@ -100,7 +100,7 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
             @Override
             public void run() {
                 mRawDataTextView.setText(data.rawDataString);
-                mDataTextview.setText(data.toXYString());
+                mDataTextview.setText(data.toIdXYString());
             }
         });
     }

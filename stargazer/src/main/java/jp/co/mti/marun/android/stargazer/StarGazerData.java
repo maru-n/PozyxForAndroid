@@ -52,6 +52,14 @@ public class StargazerData {
         }
     }
 
+    public String toIdXYString() {
+        if (this.isDeadZone) {
+            return String.format("time:%d\nDeadZone", this.time);
+        } else {
+            return String.format("time:%d\nid:%d x:%.4f  y:%.4f", this.time, this.markerId, this.x, this.y);
+        }
+    }
+
     public String toLogString() {
         if (this.isDeadZone) {
             return String.format("# %d DeadZone", this.time);
