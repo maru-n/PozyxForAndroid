@@ -12,8 +12,12 @@ public class StargazerMultiIDManager extends StargazerManager {
 
     public HashMap<Integer, double[]> markerMap = new HashMap<Integer, double[]>();
 
-    public StargazerMultiIDManager(Context context, File markerMapFile) {
+    public StargazerMultiIDManager(Context context, File markerMapData) {
         super(context);
+        setupMarkerMap(markerMapData);
+    }
+
+    private void setupMarkerMap(File markerMapData) {
         double[] data1 = {0.0, 0.0, 0.0, 0.0};
         this.markerMap.put(24836, data1);
         double[] data2 = {0.0, 1.5, 0.0, 0.0};
