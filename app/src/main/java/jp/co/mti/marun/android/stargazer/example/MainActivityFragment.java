@@ -46,12 +46,12 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
         mLoggingSwitch.setOnCheckedChangeListener(this);
         mNavDisplay = (NavigationDisplayView)view.findViewById(R.id.navigation_display);
 
-        SgUsbSerialManager usbSerialManager = new SgUsbSerialManager(this.getActivity());
+        SgDeviceManager sgDeviceManager = new SgUsbSerialManager(this.getActivity());
 
         //mStargazerManager = new StargazerNoDeviceDebugManager(StargazerNoDeviceDebugManager.TS_LORENZ);
         //mStargazerManager = new StargazerNoDeviceDebugManager(StargazerNoDeviceDebugManager.TS_RW);
-        mStargazerManager = new StargazerManager(usbSerialManager);
-        //mStargazerManager = new StargazerMultiIDManager(usbSerialManager, new File(Environment.getExternalStorageDirectory() + "/stargazer/"));
+        //mStargazerManager = new StargazerManager(usbSerialManager);
+        mStargazerManager = new StargazerMultiIDManager(sgDeviceManager, new File(Environment.getExternalStorageDirectory() + "/stargazer/"));
 
         mStargazerManager.setListener(this);
         mStargazerManager.start();

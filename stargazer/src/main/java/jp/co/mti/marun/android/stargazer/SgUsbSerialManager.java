@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by maruyama_n on 2016/02/17.
  */
-public class SgUsbSerialManager implements SerialInputOutputManager.Listener {
+public class SgUsbSerialManager extends SgDeviceManager implements SerialInputOutputManager.Listener {
     private static final String ACTION_USB_PERMISSION = "jp.co.mti.marun.stargazer.USB_PERMISSION";
     private static final int BAUD_RATE = 115200;
     private final String TAG = this.getClass().getSimpleName();
@@ -31,9 +31,6 @@ public class SgUsbSerialManager implements SerialInputOutputManager.Listener {
     private UsbManager mUsbManager = null;
     private PendingIntent mPermissionIntent;
     private SerialInputOutputManager mSerialIoManager = null;
-    private StringBuffer buffer = new StringBuffer();
-
-    private SgUsbSerialManager.Listener mListener;
 
     private final BroadcastReceiver mUsbPermissionReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -71,6 +68,7 @@ public class SgUsbSerialManager implements SerialInputOutputManager.Listener {
         context.registerReceiver(mUsbPermissionReceiver, filter);
     }
 
+    @Override
     public void connect() {
         UsbSerialPort port = null;
         try {
@@ -91,22 +89,11 @@ public class SgUsbSerialManager implements SerialInputOutputManager.Listener {
         }
     }
 
+    @Override
     public void disconnect() {
         if (mSerialIoManager != null) {
             mSerialIoManager.stop();
         }
-    }
-
-    public void setListener(SgUsbSerialManager.Listener listener) {
-        mListener = listener;
-    }
-
-    public SgUsbSerialManager.Listener getListener() {
-        return this.mListener;
-    }
-
-    public void removeListener() {
-        mListener = null;
     }
 
     private UsbSerialPort findDefaultPort() throws StargazerException {
@@ -162,10 +149,5 @@ public class SgUsbSerialManager implements SerialInputOutputManager.Listener {
         if (mListener != null) {
             mListener.onError(e);
         }
-    }
-
-    public interface Listener {
-        void onNewData(byte[] bytes);
-        void onError(Exception e);
     }
 }

@@ -12,23 +12,23 @@ public class StargazerManager implements SgUsbSerialManager.Listener {
     private final String TAG = this.getClass().getSimpleName();
     private final Pattern OutputPattern = Pattern.compile("~(.+?)`");
 
-    private SgUsbSerialManager mUsbSerialManager;
+    private SgDeviceManager sgDeviceManager;
     private StargazerManager.Listener mListener = null;
     private StringBuffer buffer = new StringBuffer();
 
     public StargazerManager() {}
 
-    public StargazerManager(SgUsbSerialManager usbSerialManager) {
-        this.mUsbSerialManager = usbSerialManager;
-        this.mUsbSerialManager.setListener(this);
+    public StargazerManager(SgDeviceManager deviceManager) {
+        this.sgDeviceManager = deviceManager;
+        this.sgDeviceManager.setListener(this);
     }
 
     public void start() {
-        this.mUsbSerialManager.connect();
+        this.sgDeviceManager.connect();
     }
 
     public void stop() {
-        this.mUsbSerialManager.disconnect();
+        this.sgDeviceManager.disconnect();
     }
 
     public void setListener(StargazerManager.Listener listener) {
