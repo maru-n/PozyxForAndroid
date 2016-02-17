@@ -11,6 +11,8 @@
         android:layout_height="wrap_content"
         android:text="Raw Data"
         android:id="@+id/raw_data_text"
+        android:maxLines="2"
+        android:minLines="2"
         android:layout_below="@+id/data_text"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"

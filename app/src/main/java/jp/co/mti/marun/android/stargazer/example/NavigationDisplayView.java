@@ -77,13 +77,11 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     public void surfaceCreated(SurfaceHolder holder) {
         mHolder = holder;
         mLooper = new Thread(this);
+        mLooper.start();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        if(mLooper != null){
-            mLooper.start();
-        }
     }
 
     @Override
