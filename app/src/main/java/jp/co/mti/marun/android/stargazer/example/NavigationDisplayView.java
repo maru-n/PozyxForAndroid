@@ -132,7 +132,7 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
         mHolder.unlockCanvasAndPost(canvas);
     }
     
-    private int convertMeter2Pixel(float x) {
+    private int convertMeter2Pixel(double x) {
         int p = (int) (GRID_UNIT_PIXEL * x / GRID_UNIT_METER);
         return p;
     }

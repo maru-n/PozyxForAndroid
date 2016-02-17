@@ -8,10 +8,10 @@ import java.util.regex.Pattern;
  */
 public class StarGazerData {
     public long time;
-    public float angle;
-    public float x;
-    public float y;
-    public float z;
+    public double angle;
+    public double x;
+    public double y;
+    public double z;
     public int markerId;
     public boolean isDeadZone = false;
     public String rawDataString;
