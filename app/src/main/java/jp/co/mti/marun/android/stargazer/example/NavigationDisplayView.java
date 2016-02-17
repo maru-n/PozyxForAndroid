@@ -11,7 +11,7 @@ import android.view.SurfaceView;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import jp.co.mti.marun.android.stargazer.*;
+import jp.co.mti.marun.android.stargazer.StarGazerData;
 
 /**
  * Created by maruyama_n on 2015/12/18.
