@@ -23,7 +23,7 @@ import java.util.Calendar;
 import jp.co.mti.marun.android.stargazer.*;
 
 
-public class MainActivityFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, StargazerListener {
+public class MainActivityFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, StargazerManager.Listener {
 
     private final String TAG = this.getClass().getSimpleName();
 
@@ -46,14 +46,15 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
         mLoggingSwitch.setOnCheckedChangeListener(this);
         mNavDisplay = (NavigationDisplayView)view.findViewById(R.id.navigation_display);
 
+        SgUsbSerialManager usbSerialManager = new SgUsbSerialManager(this.getActivity());
+
         //mStargazerManager = new StargazerNoDeviceDebugManager(StargazerNoDeviceDebugManager.TS_LORENZ);
         //mStargazerManager = new StargazerNoDeviceDebugManager(StargazerNoDeviceDebugManager.TS_RW);
-        //mStargazerManager = new StargazerManager(this.getActivity());
-        String filePath = Environment.getExternalStorageDirectory() + "/stargazer/";
-        mStargazerManager = new StargazerMultiIDManager(this.getActivity(), new File(filePath));
+        mStargazerManager = new StargazerManager(usbSerialManager);
+        //mStargazerManager = new StargazerMultiIDManager(usbSerialManager, new File(Environment.getExternalStorageDirectory() + "/stargazer/"));
 
         mStargazerManager.setListener(this);
-        mStargazerManager.connect();
+        mStargazerManager.start();
         return view;
     }
 

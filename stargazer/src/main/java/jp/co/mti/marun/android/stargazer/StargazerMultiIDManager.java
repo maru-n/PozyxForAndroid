@@ -12,8 +12,8 @@ public class StargazerMultiIDManager extends StargazerManager {
 
     public HashMap<Integer, double[]> markerMap = new HashMap<Integer, double[]>();
 
-    public StargazerMultiIDManager(Context context, File markerMapData) {
-        super(context);
+    public StargazerMultiIDManager(SgUsbSerialManager usbSerialManager, File markerMapData) {
+        super(usbSerialManager);
         setupMarkerMap(markerMapData);
     }
 
