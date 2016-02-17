@@ -44,7 +44,7 @@ public class StargazerData {
         }
     }
 
-    public StargazerData(String rawData, HashMap<Integer, double[]> markerData) throws StargazerException {
+    public StargazerData(String rawData, HashMap<Integer, double[]> markerMap) throws StargazerException {
         this();
         this.rawDataString = rawData;
         Matcher m1 = MultiIDDataPattern1.matcher(rawData);
@@ -55,11 +55,16 @@ public class StargazerData {
             double x = (float) (Float.parseFloat(m1.group(3)) * 0.01);
             double y = (float) (Float.parseFloat(m1.group(4)) * 0.01);
             double z = (float) (Float.parseFloat(m1.group(5)) * 0.01);
+
             this.markerId = markerId;
-            this.angle = angle;
-            this.x = x;
-            this.y = y;
-            this.z = z;
+            if (markerMap.containsKey(markerId)) {
+                this.angle = angle + markerMap.get(markerId)[0];
+                this.x = x + markerMap.get(markerId)[1];
+                this.y = y + markerMap.get(markerId)[2];
+                this.z = z + markerMap.get(markerId)[3];
+            } else {
+                this.isDeadZone = true;
+            }
         } else if (m2.find()) {
             int markerId1 = Integer.parseInt(m2.group(1));
             double angle1 = Float.parseFloat(m2.group(2));
@@ -71,11 +76,28 @@ public class StargazerData {
             double x2 = (float) (Float.parseFloat(m2.group(8)) * 0.01);
             double y2 = (float) (Float.parseFloat(m2.group(9)) * 0.01);
             double z2 = (float) (Float.parseFloat(m2.group(10)) * 0.01);
-            this.markerId = markerId2;
-            this.angle = angle2;
-            this.x = x2;
-            this.y = y2;
-            this.z = z2;
+
+            if (markerMap.containsKey(markerId1) && markerMap.containsKey(markerId2)) {
+                this.markerId = markerId1;
+                this.angle = (angle1 + markerMap.get(markerId1)[0] + angle2 + markerMap.get(markerId2)[0]);
+                this.x = (x1 + markerMap.get(markerId1)[1] + x2 + markerMap.get(markerId2)[1]) / 2.0;
+                this.y = (y1 + markerMap.get(markerId1)[2] + y2 + markerMap.get(markerId2)[2]) / 2.0;
+                this.z = (z1 + markerMap.get(markerId1)[3] + z2 + markerMap.get(markerId2)[3]) / 2.0;
+            } else if (markerMap.containsKey(markerId1)) {
+                this.markerId = markerId1;
+                this.angle = angle1 + markerMap.get(markerId1)[0];
+                this.x = x1 + markerMap.get(markerId1)[1];
+                this.y = y1 + markerMap.get(markerId1)[2];
+                this.z = z1 + markerMap.get(markerId1)[3];
+            } else if (markerMap.containsKey(markerId2)) {
+                this.markerId = markerId2;
+                this.angle = angle2 + markerMap.get(markerId2)[0];
+                this.x = x2 + markerMap.get(markerId2)[1];
+                this.y = y2 + markerMap.get(markerId2)[2];
+                this.z = z2 + markerMap.get(markerId2)[3];
+            } else {
+                this.isDeadZone = true;
+            }
         } else if (DeadZonePattern.matcher(rawData).find()) {
             this.isDeadZone = true;
         } else {
