@@ -27,20 +27,21 @@ public class StargazerMultiIDManager extends StargazerManager {
         String line;
         try {
             while (( line = stream.readLine()) != null) {
-                Log.d(TAG, line);
+                String strs[] = line.split("[\\s]+");
+                if (strs[0].equals("#")) {
+                    continue;
+                }
+                int markerId = Integer.parseInt(strs[0]);
+                double angle = Double.parseDouble(strs[1]);
+                double x = Double.parseDouble(strs[2]);
+                double y = Double.parseDouble(strs[3]);
+                double z = Double.parseDouble(strs[4]);
+                double[] data = {angle, x, y, z};
+                this.markerMap.put(markerId, data);
             }
         } catch (IOException e) {
-            return;
+            Log.e(TAG, "Invalid marker map file format.");
         }
-
-        double[] data1 = {0.0, 0.0, 0.0, 0.0};
-        this.markerMap.put(24836, data1);
-        double[] data2 = {0.0, 1.5, 0.0, 0.0};
-        this.markerMap.put(25092, data2);
-        double[] data3 = {0.0, 0.0, -1.5, 0.0};
-        this.markerMap.put(24594, data3);
-        double[] data4 = {0.0, 1.5, -1.5, 0.0};
-        this.markerMap.put(24706, data4);
     }
 
     @Override
