@@ -1,29 +1,41 @@
 package jp.co.mti.marun.android.stargazer;
 
 import android.os.Handler;
+import android.util.Log;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by maruyama_n on 2016/02/19.
  */
 public class SgDummyDeviceManager extends SgDeviceManager implements Runnable {
-    public static final String MULTI_ID_DUMMY_DATA = "MULTI_ID_DUMMY_DATA";
+    private final String TAG = this.getClass().getSimpleName();
+
+    public static final String DUMMY_DATA = "DUMMY_DATA";
     public static final String LORENZ_ATTRACTOR = "LORENZ_ATTRACTOR";
     public static final String RANDOM_WALK = "RANDOM_WALK";
+    public static final String STOP_ORIGIN = "STOP_ORIGIN";
 
-    private String dummyDataType;
+    private String mDummyType;
     private Handler mHandler = new Handler();
-
-    private int markerId = 65535;
-    private double angle;
-    private double x;
-    private double y;
-    private double z;
 
     // parameters
     private static final int DELAY = 100;
 
-    // for dumy data
+    // for dummy data
+    private ArrayList<String> mDummyDataList = new ArrayList<String>();
+    private int mDummyDataIndex = 0;
 
+    // for virtual data generate
+    private int markerId;
+    private double angle;
+    private double x;
+    private double y;
+    private double z;
 
     // Lorenz attractor parameters
     private static final double p = 10;
@@ -37,8 +49,25 @@ public class SgDummyDeviceManager extends SgDeviceManager implements Runnable {
 
 
     public SgDummyDeviceManager(String type) {
-        this.dummyDataType = type;
+        this.mDummyType = type;
         this.initData();
+    }
+
+    public SgDummyDeviceManager(String type, File dummyDataFile) {
+        this(type);
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(dummyDataFile));
+            String line;
+            while (( line = reader.readLine()) != null) {
+                mDummyDataList.add(line);
+            }
+            if (mDummyDataList.size() == 0) {
+                throw new Exception("No dummy data.");
+            }
+        } catch (Exception e) {
+            this.mDummyType = STOP_ORIGIN;
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     @Override
@@ -53,58 +82,55 @@ public class SgDummyDeviceManager extends SgDeviceManager implements Runnable {
 
     @Override
     public void run() {
-        byte[] data = this.getData();
-        this.callOnNewDataListener(data);
-        this.updateData();
+        byte[] data = new byte[0];
+        try {
+            data = this.getNextData();
+            this.callOnNewDataListener(data);
+        } catch (Exception e) {
+            this.callOnErrorListener(e);
+        }
         mHandler.postDelayed(this, DELAY);
     }
 
     private void initData() {
-        switch (this.dummyDataType) {
-            case SgDummyDeviceManager.MULTI_ID_DUMMY_DATA:
-                this.updateDummyData();
-                break;
-            case SgDummyDeviceManager.LORENZ_ATTRACTOR:
-                angle = 0;
-                x = Math.random();
-                y = Math.random();
-                z = Math.random();
-                break;
-            case SgDummyDeviceManager.RANDOM_WALK:
-                angle = 0;
-                x = 0;
-                y = 0;
-                z = 0;
-                break;
-            default:
-                break;
+        if (mDummyType == LORENZ_ATTRACTOR) {
+            markerId = 65535;
+            angle = 0;
+            x = Math.random();
+            y = Math.random();
+            z = Math.random();
+        } else {
+            markerId = 65535;
+            angle = 0;
+            x = 0;
+            y = 0;
+            z = 0;
         }
     }
 
-    private void updateData() {
-        switch (this.dummyDataType) {
-            case SgDummyDeviceManager.MULTI_ID_DUMMY_DATA:
-                this.updateDummyData();
+
+    private byte[] getNextData() throws StargazerException, IOException {
+        String dataStr = "";
+        switch (mDummyType) {
+            case DUMMY_DATA:
+                dataStr = mDummyDataList.get(mDummyDataIndex++);
+                if (mDummyDataList.size() <= mDummyDataIndex) {
+                    mDummyDataIndex = 0;
+                }
                 break;
-            case SgDummyDeviceManager.LORENZ_ATTRACTOR:
+
+            case LORENZ_ATTRACTOR:
                 this.updateLorenzAttractor();
-                break;
-            case SgDummyDeviceManager.RANDOM_WALK:
+            case RANDOM_WALK:
                 this.updateRandomWalk();
+            case STOP_ORIGIN:
+                dataStr = String.format("~^I%d|%+.2f|%+.2f|%+.2f|%.2f`", markerId, angle, x*100, y*100, z*100);
                 break;
+
             default:
                 break;
         }
-    }
-
-    private byte[] getData() {
-        String dataStr;
-        dataStr = String.format("~^I%d|%+.2f|%+.2f|%+.2f|%.2f`", markerId, angle, x*100, y*100, z*100);
         return dataStr.getBytes();
-    }
-
-    private void updateDummyData() {
-
     }
 
     private void updateLorenzAttractor() {

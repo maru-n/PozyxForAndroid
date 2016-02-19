@@ -17,8 +17,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.util.Calendar;
 
 import jp.co.mti.marun.android.stargazer.*;
@@ -47,14 +47,18 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
         mLoggingSwitch.setOnCheckedChangeListener(this);
         mNavDisplay = (NavigationDisplayView)view.findViewById(R.id.navigation_display);
 
-        //SgDeviceManager sgDeviceManager = new SgUsbSerialDeviceManager(this.getActivity());
-        SgDeviceManager sgDeviceManager = new SgDummyDeviceManager(SgDummyDeviceManager.LORENZ_ATTRACTOR);
+        // Device setting.
+        //SgDeviceManager sgDeviceManager = new SgUsbSerialDeviceManager(this.getActivity());  // Real device
+        //SgDeviceManager sgDeviceManager = new SgDummyDeviceManager(SgDummyDeviceManager.LORENZ_ATTRACTOR);  // Virtual time series
+        File dummyDatafile = new File(Environment.getExternalStorageDirectory() + "/stargazer/dummydata/multiid_f36.txt");
+        SgDeviceManager sgDeviceManager = new SgDummyDeviceManager(SgDummyDeviceManager.DUMMY_DATA, dummyDatafile);  // Recorded dummy data
 
-        mStargazerManager = new StargazerManager(sgDeviceManager);
+        // Single ID
+        //mStargazerManager = new StargazerManager(sgDeviceManager);
 
-        //String s = "# id, angle, x, y, z\n24836 0 0 0 0\n25092 0 2 0 0\n24594 0 0 -2 0\n24706 0 2 -2 0\n";
-        //StringReader markerMapData = new StringReader(s);
-        //mStargazerManager = new StargazerMultiIDManager(sgDeviceManager, markerMapData);
+        // Multi ID
+        InputStream markerMapData = this.getActivity().getResources().openRawResource(R.raw.markermap_f36);
+        mStargazerManager = new StargazerMultiIDManager(sgDeviceManager, markerMapData);
 
         mStargazerManager.setListener(this);
         mStargazerManager.start();
@@ -120,7 +124,7 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
     }
 
     private File createNewLogFile() {
-        String filename = "/stargazer/";
+        String filename = "/stargazer/log/";
         filename += DateFormat.format("yyyyMMdd-kkmmss", Calendar.getInstance());
         filename += ".log";
 

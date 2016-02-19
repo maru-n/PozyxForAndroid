@@ -1,13 +1,11 @@
 package jp.co.mti.marun.android.stargazer;
 
-import android.content.Context;
+import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 /**
@@ -15,24 +13,24 @@ import java.util.HashMap;
  */
 public class StargazerMultiIDManager extends StargazerManager {
 
+    private final String TAG = this.getClass().getSimpleName();
+
     public HashMap<Integer, double[]> markerMap = new HashMap<Integer, double[]>();
 
-    public StargazerMultiIDManager(SgDeviceManager deviceManager, Reader markerMapData) {
+    public StargazerMultiIDManager(SgDeviceManager deviceManager, InputStream markerMapDataStream) {
         super(deviceManager);
-        setupMarkerMap(markerMapData);
+        setupMarkerMap(markerMapDataStream);
     }
 
-    private void setupMarkerMap(Reader markerMapData) {
-        BufferedReader data = new BufferedReader(markerMapData);
-        String str = null;
+    private void setupMarkerMap(InputStream markerMapDataStream) {
+        BufferedReader stream = new BufferedReader(new InputStreamReader(markerMapDataStream));
+        String line;
         try {
-            str = data.readLine();
-            while(str != null){
-                System.out.println(str);
-                str = data.readLine();
+            while (( line = stream.readLine()) != null) {
+                Log.d(TAG, line);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            return;
         }
 
         double[] data1 = {0.0, 0.0, 0.0, 0.0};
