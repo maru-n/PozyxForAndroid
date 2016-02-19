@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by maruyama_n on 2016/02/17.
  */
-public class SgUsbSerialManager extends SgDeviceManager implements SerialInputOutputManager.Listener {
+public class SgUsbSerialDeviceManager extends SgDeviceManager implements SerialInputOutputManager.Listener {
     private static final String ACTION_USB_PERMISSION = "jp.co.mti.marun.stargazer.USB_PERMISSION";
     private static final int BAUD_RATE = 115200;
     private final String TAG = this.getClass().getSimpleName();
@@ -42,23 +42,23 @@ public class SgUsbSerialManager extends SgDeviceManager implements SerialInputOu
                         UsbSerialDriver driver = UsbSerialProber.getDefaultProber().probeDevice(device);
                         UsbSerialPort port = driver.getPorts().get(0);
                         try {
-                            SgUsbSerialManager.this.openSerialIOPort(port);
+                            SgUsbSerialDeviceManager.this.openSerialIOPort(port);
                         } catch (StargazerException e) {
                             Log.w(TAG, e.getMessage());
                         }
                     }
                     else {
-                        SgUsbSerialManager.this.onRunError(new StargazerException("permission denied for device " + device));
+                        SgUsbSerialDeviceManager.this.onRunError(new StargazerException("permission denied for device " + device));
                     }
                 }
             } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-                SgUsbSerialManager.this.connect();
+                SgUsbSerialDeviceManager.this.connect();
             } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
             }
         }
     };
 
-    public SgUsbSerialManager(Context context) {
+    public SgUsbSerialDeviceManager(Context context) {
         this.mUsbManager = (UsbManager) context.getSystemService(context.USB_SERVICE);
         this.mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter();
@@ -139,15 +139,11 @@ public class SgUsbSerialManager extends SgDeviceManager implements SerialInputOu
 
     @Override
     public void onNewData(byte[] bytes) {
-        if (mListener != null) {
-            mListener.onNewData(bytes);
-        }
+        this.callOnNewDataListener(bytes);
     }
 
     @Override
     public void onRunError(Exception e) {
-        if (mListener != null) {
-            mListener.onError(e);
-        }
+        this.callOnErrorListener(e);
     }
 }

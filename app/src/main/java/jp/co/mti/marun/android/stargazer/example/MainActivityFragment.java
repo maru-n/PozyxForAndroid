@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.util.Calendar;
 
 import jp.co.mti.marun.android.stargazer.*;
@@ -46,12 +47,14 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
         mLoggingSwitch.setOnCheckedChangeListener(this);
         mNavDisplay = (NavigationDisplayView)view.findViewById(R.id.navigation_display);
 
-        SgDeviceManager sgDeviceManager = new SgUsbSerialManager(this.getActivity());
+        //SgDeviceManager sgDeviceManager = new SgUsbSerialDeviceManager(this.getActivity());
+        SgDeviceManager sgDeviceManager = new SgDummyDeviceManager(SgDummyDeviceManager.LORENZ_ATTRACTOR);
 
-        //mStargazerManager = new StargazerNoDeviceDebugManager(StargazerNoDeviceDebugManager.TS_LORENZ);
-        //mStargazerManager = new StargazerNoDeviceDebugManager(StargazerNoDeviceDebugManager.TS_RW);
-        //mStargazerManager = new StargazerManager(usbSerialManager);
-        mStargazerManager = new StargazerMultiIDManager(sgDeviceManager, new File(Environment.getExternalStorageDirectory() + "/stargazer/"));
+        mStargazerManager = new StargazerManager(sgDeviceManager);
+
+        //String s = "# id, angle, x, y, z\n24836 0 0 0 0\n25092 0 2 0 0\n24594 0 0 -2 0\n24706 0 2 -2 0\n";
+        //StringReader markerMapData = new StringReader(s);
+        //mStargazerManager = new StargazerMultiIDManager(sgDeviceManager, markerMapData);
 
         mStargazerManager.setListener(this);
         mStargazerManager.start();

@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Created by maruyama_n on 2015/12/21.
  */
-public class StargazerManager implements SgUsbSerialManager.Listener {
+public class StargazerManager implements SgUsbSerialDeviceManager.Listener {
     private final String TAG = this.getClass().getSimpleName();
     private final Pattern OutputPattern = Pattern.compile("~(.+?)`");
 

@@ -10,11 +10,11 @@ public abstract class SgDeviceManager {
 
     abstract public void disconnect();
 
-    public void setListener(SgUsbSerialManager.Listener listener) {
+    public void setListener(SgUsbSerialDeviceManager.Listener listener) {
         mListener = listener;
     }
 
-    public SgUsbSerialManager.Listener getListener() {
+    public SgUsbSerialDeviceManager.Listener getListener() {
         return this.mListener;
     }
 
@@ -22,8 +22,20 @@ public abstract class SgDeviceManager {
         mListener = null;
     }
 
+    protected void callOnNewDataListener(byte[] data) {
+        if (mListener != null) {
+            mListener.onNewData(data);
+        }
+    }
+
+    protected void callOnErrorListener(Exception e) {
+        if (mListener != null) {
+            mListener.onError(e);
+        }
+    }
+
     public interface Listener {
-        void onNewData(byte[] bytes);
+        void onNewData(byte[] data);
         void onError(Exception e);
     }
 }
