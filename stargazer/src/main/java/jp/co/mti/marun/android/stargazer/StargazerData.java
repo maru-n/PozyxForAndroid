@@ -50,18 +50,17 @@ public class StargazerData {
         Matcher m1 = MultiIDDataPattern1.matcher(rawData);
         Matcher m2 = MultiIDDataPattern2.matcher(rawData);
         if (m1.find()) {
-            int markerId = Integer.parseInt(m1.group(1));
-            double angle = Float.parseFloat(m1.group(2));
-            double x = (float) (Float.parseFloat(m1.group(3)) * 0.01);
-            double y = (float) (Float.parseFloat(m1.group(4)) * 0.01);
-            double z = (float) (Float.parseFloat(m1.group(5)) * 0.01);
-
-            this.markerId = markerId;
+            int markerId1 = Integer.parseInt(m1.group(1));
+            double angle1 = Float.parseFloat(m1.group(2));
+            double x1 = (float) (Float.parseFloat(m1.group(3)) * 0.01);
+            double y1 = (float) (Float.parseFloat(m1.group(4)) * 0.01);
+            double z1 = (float) (Float.parseFloat(m1.group(5)) * 0.01);
             if (markerMap.containsKey(markerId)) {
-                this.angle = angle + markerMap.get(markerId)[0];
-                this.x = x + markerMap.get(markerId)[1];
-                this.y = y + markerMap.get(markerId)[2];
-                this.z = z + markerMap.get(markerId)[3];
+                this.markerId = markerId1;
+                this.angle = angle1 + markerMap.get(markerId)[0];
+                this.x = x1 + markerMap.get(markerId)[1];
+                this.y = y1 + markerMap.get(markerId)[2];
+                this.z = z1 + markerMap.get(markerId)[3];
             } else {
                 this.isDeadZone = true;
             }
@@ -76,7 +75,6 @@ public class StargazerData {
             double x2 = (float) (Float.parseFloat(m2.group(8)) * 0.01);
             double y2 = (float) (Float.parseFloat(m2.group(9)) * 0.01);
             double z2 = (float) (Float.parseFloat(m2.group(10)) * 0.01);
-
             if (markerMap.containsKey(markerId1) && markerMap.containsKey(markerId2)) {
                 this.markerId = markerId1;
                 this.angle = (angle1 + markerMap.get(markerId1)[0] + angle2 + markerMap.get(markerId2)[0]);

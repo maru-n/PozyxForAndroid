@@ -48,16 +48,17 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
         mNavDisplay = (NavigationDisplayView)view.findViewById(R.id.navigation_display);
 
         // Device setting.
-        //SgDeviceManager sgDeviceManager = new SgUsbSerialDeviceManager(this.getActivity());  // Real device
-        //SgDeviceManager sgDeviceManager = new SgDummyDeviceManager(SgDummyDeviceManager.LORENZ_ATTRACTOR);  // Virtual time series
-        File dummyDatafile = new File(Environment.getExternalStorageDirectory() + "/stargazer/dummydata/multiid_f36.txt");
-        SgDeviceManager sgDeviceManager = new SgDummyDeviceManager(SgDummyDeviceManager.DUMMY_DATA, dummyDatafile);  // Recorded dummy data
+        SgDeviceManager sgDeviceManager;
+        sgDeviceManager = new SgUsbSerialDeviceManager(this.getActivity());  // Real device
+        //sgDeviceManager = new SgDummyDeviceManager(SgDummyDeviceManager.LORENZ_ATTRACTOR);  // Virtual time series
+        //File dummyDatafile = new File(Environment.getExternalStorageDirectory() + "/stargazer/dummydata/multiid_f28.txt");
+        //sgDeviceManager = new SgDummyDeviceManager(SgDummyDeviceManager.DUMMY_DATA, dummyDatafile);  // Recorded dummy data
 
         // Single ID
         //mStargazerManager = new StargazerManager(sgDeviceManager);
 
         // Multi ID
-        InputStream markerMapData = this.getActivity().getResources().openRawResource(R.raw.markermap_f36);
+        InputStream markerMapData = this.getActivity().getResources().openRawResource(R.raw.markermap_f28);
         mStargazerManager = new StargazerMultiIDManager(sgDeviceManager, markerMapData);
 
         mStargazerManager.setListener(this);

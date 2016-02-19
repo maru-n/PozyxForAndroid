@@ -24,10 +24,12 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     private LinkedList<StargazerData> mDataList;
 
     private static final int MAX_TRACK_DATA = 300;
-    private static final int   GRID_UNIT_PIXEL = 100;
+    private static final int   GRID_UNIT_PIXEL = 50;
     private static final float GRID_UNIT_METER = 1;
     private static final int POSITION_MARKER_RADIUS = 10;
     private static final int TRACK_MARKER_RADIUS = 3;
+    private static final int ORIGIN_SHIFT_X_PIXEL= -255;
+    private static final int ORIGIN_SHIFT_Y_PIXEL = 150;
 
 
     public NavigationDisplayView(Context context) {
@@ -100,8 +102,8 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     private void draw() {
         int width = this.getWidth();
         int height = this.getHeight();
-        int centerX = width/2;
-        int centerY = height/2;
+        int centerX = width/2 + ORIGIN_SHIFT_X_PIXEL;
+        int centerY = height/2 - ORIGIN_SHIFT_Y_PIXEL;
 
         Canvas canvas = mHolder.lockCanvas();
         if (canvas == null) {return;}
