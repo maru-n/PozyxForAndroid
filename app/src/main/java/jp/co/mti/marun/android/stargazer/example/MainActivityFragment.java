@@ -73,7 +73,7 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
             try {
                 File file = this.createNewLogFile();
                 mLogWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"));
-                mLogWriter.write("# unix_time[msec] id angle[degree] x[m] y[m] z[m]");
+                mLogWriter.write("# unix_time[msec] marker_id_1 marker_id_2 angle[degree] x[m] y[m] z[m]");
                 mLogWriter.newLine();
                 toastMessage = file.getPath();
             } catch (Exception e) {

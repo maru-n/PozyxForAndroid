@@ -20,6 +20,8 @@ public class SgDummyDeviceManager extends SgDeviceManager implements Runnable {
     public static final String RANDOM_WALK = "RANDOM_WALK";
     public static final String STOP_ORIGIN = "STOP_ORIGIN";
 
+    private final int DUMMY_MARKER_ID = 65535;
+
     private String mDummyType;
     private Handler mHandler = new Handler();
 
@@ -93,15 +95,13 @@ public class SgDummyDeviceManager extends SgDeviceManager implements Runnable {
     }
 
     private void initData() {
+        markerId = DUMMY_MARKER_ID;
+        angle = 0;
         if (mDummyType == LORENZ_ATTRACTOR) {
-            markerId = 65535;
-            angle = 0;
             x = Math.random();
             y = Math.random();
             z = Math.random();
         } else {
-            markerId = 65535;
-            angle = 0;
             x = 0;
             y = 0;
             z = 0;
