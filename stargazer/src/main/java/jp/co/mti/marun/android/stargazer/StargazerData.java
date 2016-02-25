@@ -58,12 +58,12 @@ public class StargazerData {
             double x1 = (float) (Float.parseFloat(m1.group(3)) * 0.01);
             double y1 = (float) (Float.parseFloat(m1.group(4)) * 0.01);
             double z1 = (float) (Float.parseFloat(m1.group(5)) * 0.01);
-            if (markerMap.containsKey(markerId)) {
+            if (markerMap.containsKey(markerId1)) {
                 this.markerId[0] = markerId1;
-                this.angle = angle1 + markerMap.get(markerId)[0];
-                this.x = x1 + markerMap.get(markerId)[1];
-                this.y = y1 + markerMap.get(markerId)[2];
-                this.z = z1 + markerMap.get(markerId)[3];
+                this.angle = angle1 + markerMap.get(markerId1)[0];
+                this.x = x1 + markerMap.get(markerId1)[1];
+                this.y = y1 + markerMap.get(markerId1)[2];
+                this.z = z1 + markerMap.get(markerId1)[3];
             } else {
                 this.isDeadZone = true;
             }
