@@ -15,11 +15,16 @@ public class StargazerMultiIDManager extends StargazerManager {
 
     private final String TAG = this.getClass().getSimpleName();
 
-    public HashMap<Integer, double[]> markerMap = new HashMap<Integer, double[]>();
+    // <Marker_ID, {angle, x, y, z}>
+    private HashMap<Integer, double[]> markerMap = new HashMap<Integer, double[]>();
 
     public StargazerMultiIDManager(SgDeviceManager deviceManager, InputStream markerMapDataStream) {
         super(deviceManager);
         setupMarkerMap(markerMapDataStream);
+    }
+
+    public HashMap<Integer, double[]> getMarkerMap(){
+        return this.markerMap;
     }
 
     private void setupMarkerMap(InputStream markerMapDataStream) {

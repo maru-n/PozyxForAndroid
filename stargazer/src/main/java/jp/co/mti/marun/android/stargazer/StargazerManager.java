@@ -45,13 +45,13 @@ public class StargazerManager implements SgUsbSerialDeviceManager.Listener {
 
     protected void callOnNewDataListener(StargazerData d) {
         if (mListener != null) {
-            mListener.onNewData(this, d);
+            mListener.onStargazerNewData(this, d);
         }
     }
 
     protected void callOnErrorListener(StargazerException e) {
         if (mListener != null) {
-            mListener.onError(this, e);
+            mListener.onStargazerError(this, e);
         }
     }
 
@@ -86,7 +86,7 @@ public class StargazerManager implements SgUsbSerialDeviceManager.Listener {
     }
 
     public interface Listener {
-        void onNewData(StargazerManager sm, final StargazerData data);
-        void onError(StargazerManager sm, final StargazerException e);
+        void onStargazerNewData(StargazerManager sm, final StargazerData data);
+        void onStargazerError(StargazerManager sm, final StargazerException e);
     }
 }

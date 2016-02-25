@@ -99,7 +99,7 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
     }
 
     @Override
-    public void onNewData(StargazerManager sm, final StargazerData data) {
+    public void onStargazerNewData(StargazerManager sm, final StargazerData data) {
         try {
             if (mLogWriter != null) {
                 mLogWriter.write(data.toLogString());
@@ -121,7 +121,8 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
     }
 
     @Override
-    public void onError(StargazerManager sm, StargazerException e) {
+    public void onStargazerError(StargazerManager sm, StargazerException e) {
+        //e.printStackTrace();
         Log.e(TAG, e.getMessage());
     }
 
