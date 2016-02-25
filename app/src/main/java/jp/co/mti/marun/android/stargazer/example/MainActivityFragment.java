@@ -60,6 +60,7 @@ public class MainActivityFragment extends Fragment implements CompoundButton.OnC
         // Multi ID
         InputStream markerMapData = this.getActivity().getResources().openRawResource(R.raw.markermap_f28);
         mStargazerManager = new StargazerMultiIDManager(sgDeviceManager, markerMapData);
+        mNavDisplay.setMarkerMap(((StargazerMultiIDManager)mStargazerManager).getMarkerMap());
 
         mStargazerManager.setListener(this);
         mStargazerManager.start();
