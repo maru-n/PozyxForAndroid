@@ -27,14 +27,16 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     private HashMap<Integer, double[]> markerMap;
 
     private static final int MAX_TRACK_DATA = 300;
-    private static final int   GRID_UNIT_PIXEL = 50;
-    private static final float GRID_UNIT_METER = 1;
-    private static final int POSITION_MARKER_RADIUS = 10;
-    private static final int LANDMARK_MARKER_RADIUS = 3;
-    private static final int TRACK_MARKER_RADIUS = 3;
-    private static final int ORIGIN_SHIFT_X_PIXEL= -255;
-    private static final int ORIGIN_SHIFT_Y_PIXEL = 150;
 
+    private static final float POSITION_MARKER_RADIUS = 0.1F;
+    private static final float TRACK_MARKER_RADIUS = 0.05F;
+    private static final float LANDMARK_MARKER_RADIUS = 0.05F;
+
+    private static final float DEFAULT_DISPLAY_RANGE = 10F;
+    private static final float DISPLAY_MARGIN = 1.5F;
+
+    private float displayXmin, displayXmax, displayYmin, displayYmax;
+    private float displayScale;
 
     public NavigationDisplayView(Context context) {
         super(context);
@@ -55,7 +57,6 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
         getHolder().addCallback(this);
         mPositionPaint = new Paint();
         mPositionPaint.setColor(Color.BLUE);
-        //mPositionPaint.setAntiAlias(true);
         mPositionPaint.setStyle(Paint.Style.FILL);
 
         mTrackPaint = new Paint();
@@ -64,24 +65,61 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
 
         mGridPaint = new Paint();
         mGridPaint.setColor(Color.LTGRAY);
+        mGridPaint.setStrokeWidth(0);
 
         mAxisXPaint = new Paint();
         mAxisXPaint.setColor(Color.RED);
-        mAxisXPaint.setStrokeWidth(5);
+        mAxisXPaint.setStrokeWidth(0.05F);
 
         mAxisYPaint = new Paint();
         mAxisYPaint.setColor(Color.GREEN);
-        mAxisYPaint.setStrokeWidth(5);
+        mAxisYPaint.setStrokeWidth(0.05F);
 
         mLandmarkPaint = new Paint();
-        mLandmarkPaint.setColor(Color.RED);
+        mLandmarkPaint.setColor(Color.rgb(255,100,100));
         mLandmarkPaint.setStyle(Paint.Style.FILL);
 
         mLandmarkConnectPaint = new Paint();
-        mLandmarkConnectPaint.setColor(Color.RED);
-        mLandmarkConnectPaint.setStrokeWidth(1);
+        mLandmarkConnectPaint.setColor(Color.rgb(255,100,100));
+        mLandmarkConnectPaint.setStrokeWidth(0);
 
         mDataList = new LinkedList<StargazerData>();
+    }
+
+    private void initCoordinate() {
+
+        if (markerMap == null) {
+            displayXmin = -DEFAULT_DISPLAY_RANGE/2;
+            displayXmax = DEFAULT_DISPLAY_RANGE/2;
+            displayYmin = -DEFAULT_DISPLAY_RANGE/2;
+            displayYmax = DEFAULT_DISPLAY_RANGE;
+        } else {
+            displayXmin = -DISPLAY_MARGIN;
+            displayXmax = DISPLAY_MARGIN;
+            displayYmin = -DISPLAY_MARGIN;
+            displayYmax = DISPLAY_MARGIN;
+            for(Entry<Integer, double[]> marker : markerMap.entrySet()) {
+                displayXmin = (float) Math.min(marker.getValue()[1]-DISPLAY_MARGIN, displayXmin);
+                displayXmax = (float) Math.max(marker.getValue()[1]+DISPLAY_MARGIN, displayXmax);
+                displayYmin = (float) Math.min(marker.getValue()[2]-DISPLAY_MARGIN, displayYmin);
+                displayYmax = (float) Math.max(marker.getValue()[2]+DISPLAY_MARGIN, displayYmax);
+            }
+        }
+        float displayXRange = displayXmax - displayXmin;
+        float displayYRange = displayYmax - displayYmin;
+        float scaleX = this.getWidth()/displayXRange;
+        float scaleY = this.getHeight()/displayYRange;
+        if (scaleX < scaleY) {
+            displayScale = scaleX;
+            float yBlank = this.getHeight()/ displayScale - displayYRange;
+            displayYmin -= yBlank/2;
+            displayYmax += yBlank/2;
+        } else {
+            displayScale = scaleY;
+            float xBlank = this.getWidth()/ displayScale - displayXRange;
+            displayXmin -= xBlank/2;
+            displayXmax += xBlank/2;
+        }
     }
 
     public void setCurrentPoint(StargazerData data) {
@@ -100,12 +138,15 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mHolder = holder;
+        Canvas canvas = mHolder.lockCanvas();
+        mHolder.unlockCanvasAndPost(canvas);
         mLooper = new Thread(this);
         mLooper.start();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        initCoordinate();
     }
 
     @Override
@@ -122,41 +163,38 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     }
 
     private void draw() {
-        int width = this.getWidth();
-        int height = this.getHeight();
-        int centerX = width/2 + ORIGIN_SHIFT_X_PIXEL;
-        int centerY = height/2 - ORIGIN_SHIFT_Y_PIXEL;
 
         Canvas canvas = mHolder.lockCanvas();
         if (canvas == null) {return;}
 
+        canvas.scale(displayScale, -displayScale);
+        canvas.translate(-displayXmin, -displayYmax);
+
         canvas.drawColor(Color.WHITE);
-        for (int x=centerX%GRID_UNIT_PIXEL; x<width; x+=GRID_UNIT_PIXEL) {
-            canvas.drawLine(x, 0, x, height, mGridPaint);
+
+        for (int x = (int) Math.floor(displayXmin); x <= displayXmax; x++) {
+            canvas.drawLine(x, displayYmin, x, displayYmax, mGridPaint);
         }
-        for (int y=centerY%GRID_UNIT_PIXEL; y<height; y+=GRID_UNIT_PIXEL) {
-            canvas.drawLine(0, y, width, y, mGridPaint);
+        for (int y = (int) Math.floor(displayYmin); y <= displayYmax; y++) {
+            canvas.drawLine(displayXmin, y, displayXmax, y, mGridPaint);
         }
-        canvas.drawLine(centerX, centerY, centerX + GRID_UNIT_PIXEL, centerY, mAxisXPaint);
-        canvas.drawLine(centerX, centerY, centerX, centerY - GRID_UNIT_PIXEL, mAxisYPaint);
+
+        canvas.drawLine(0, 0, 1, 0, mAxisXPaint);
+        canvas.drawLine(0, 0, 0, 1, mAxisYPaint);
 
 
         synchronized (mDataList) {
             StargazerData latestData = mDataList.getLast();
-
             if (this.markerMap != null) {
                 for(Entry<Integer, double[]> marker : markerMap.entrySet()) {
-                    double x = marker.getValue()[1];
-                    double y = marker.getValue()[2];
-                    canvas.drawCircle(centerX + convertMeter2Pixel(x), centerY - convertMeter2Pixel(y), LANDMARK_MARKER_RADIUS, mLandmarkPaint);
-
+                    float marker_x = (float) marker.getValue()[1];
+                    float marker_y = (float) marker.getValue()[2];
+                    canvas.drawCircle(marker_x, marker_y, LANDMARK_MARKER_RADIUS, mLandmarkPaint);
                     if (latestData.markerId[0] == marker.getKey()) {
-                        canvas.drawLine(centerX + convertMeter2Pixel(latestData.x), centerY - convertMeter2Pixel(latestData.y),
-                                centerX + convertMeter2Pixel(x), centerY - convertMeter2Pixel(y), mLandmarkConnectPaint);
+                        canvas.drawLine(marker_x, marker_y, (float)latestData.x, (float)latestData.y, mLandmarkConnectPaint);
                     }
                     if (latestData.markerId[1] == marker.getKey()) {
-                        canvas.drawLine(centerX + convertMeter2Pixel(latestData.x), centerY - convertMeter2Pixel(latestData.y),
-                                centerX + convertMeter2Pixel(x), centerY - convertMeter2Pixel(y), mLandmarkConnectPaint);
+                        canvas.drawLine(marker_x, marker_y, (float)latestData.x, (float)latestData.y, mLandmarkConnectPaint);
                     }
                 }
             }
@@ -164,19 +202,13 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
             Iterator<StargazerData> iterator = mDataList.iterator();
             while (iterator.hasNext()) {
                 StargazerData d = iterator.next();
-                if (d.equals(latestData)) {
-                    canvas.drawCircle(centerX + convertMeter2Pixel(d.x), centerY - convertMeter2Pixel(d.y), POSITION_MARKER_RADIUS, mPositionPaint);
-                } else {
-                    canvas.drawCircle(centerX + convertMeter2Pixel(d.x), centerY - convertMeter2Pixel(d.y), TRACK_MARKER_RADIUS, mTrackPaint);
-                }
+                canvas.drawCircle((float)d.x, (float)d.y, TRACK_MARKER_RADIUS, mTrackPaint);
             }
+
+            canvas.drawCircle((float)latestData.x, (float)latestData.y, POSITION_MARKER_RADIUS, mPositionPaint);
         }
+
         mHolder.unlockCanvasAndPost(canvas);
-    }
-    
-    private int convertMeter2Pixel(double x) {
-        int p = (int) (GRID_UNIT_PIXEL * x / GRID_UNIT_METER);
-        return p;
     }
 }
 
