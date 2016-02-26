@@ -34,7 +34,7 @@ app/build.gradle
  }
 ```
 
-And import it!
+Then import it!
 
 ```java
 import jp.co.mti.marun.android.stargazer.*;
