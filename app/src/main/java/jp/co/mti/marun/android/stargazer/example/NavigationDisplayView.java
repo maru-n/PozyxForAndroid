@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 import jp.co.mti.marun.android.stargazer.StargazerData;
 
@@ -32,7 +33,7 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     private static final float TRACK_MARKER_RADIUS = 0.05F;
     private static final float LANDMARK_MARKER_RADIUS = 0.05F;
 
-    private static final float DEFAULT_DISPLAY_RANGE = 10F;
+    private static final float DEFAULT_DISPLAY_RANGE = 20F;
     private static final float DISPLAY_MARGIN = 1.5F;
 
     private float displayXmin, displayXmax, displayYmin, displayYmax;
@@ -92,7 +93,7 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
             displayXmin = -DEFAULT_DISPLAY_RANGE/2;
             displayXmax = DEFAULT_DISPLAY_RANGE/2;
             displayYmin = -DEFAULT_DISPLAY_RANGE/2;
-            displayYmax = DEFAULT_DISPLAY_RANGE;
+            displayYmax = DEFAULT_DISPLAY_RANGE/2;
         } else {
             displayXmin = -DISPLAY_MARGIN;
             displayXmax = DISPLAY_MARGIN;
@@ -184,18 +185,21 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
 
 
         synchronized (mDataList) {
-            StargazerData latestData = mDataList.getLast();
+
             if (this.markerMap != null) {
                 for(Entry<Integer, double[]> marker : markerMap.entrySet()) {
                     float marker_x = (float) marker.getValue()[1];
                     float marker_y = (float) marker.getValue()[2];
                     canvas.drawCircle(marker_x, marker_y, LANDMARK_MARKER_RADIUS, mLandmarkPaint);
-                    if (latestData.markerId[0] == marker.getKey()) {
-                        canvas.drawLine(marker_x, marker_y, (float)latestData.x, (float)latestData.y, mLandmarkConnectPaint);
-                    }
-                    if (latestData.markerId[1] == marker.getKey()) {
-                        canvas.drawLine(marker_x, marker_y, (float)latestData.x, (float)latestData.y, mLandmarkConnectPaint);
-                    }
+                    try {
+                        StargazerData latestData = mDataList.getLast();
+                        if (latestData.markerId[0] == marker.getKey()) {
+                            canvas.drawLine(marker_x, marker_y, (float) latestData.x, (float) latestData.y, mLandmarkConnectPaint);
+                        }
+                        if (latestData.markerId[1] == marker.getKey()) {
+                            canvas.drawLine(marker_x, marker_y, (float) latestData.x, (float) latestData.y, mLandmarkConnectPaint);
+                        }
+                    } catch (NoSuchElementException e) {}
                 }
             }
 
@@ -203,9 +207,10 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
             while (iterator.hasNext()) {
                 StargazerData d = iterator.next();
                 canvas.drawCircle((float)d.x, (float)d.y, TRACK_MARKER_RADIUS, mTrackPaint);
+                if (d == mDataList.getLast()) {
+                    canvas.drawCircle((float) d.x, (float) d.y, POSITION_MARKER_RADIUS, mPositionPaint);
+                }
             }
-
-            canvas.drawCircle((float)latestData.x, (float)latestData.y, POSITION_MARKER_RADIUS, mPositionPaint);
         }
 
         mHolder.unlockCanvasAndPost(canvas);
