@@ -4,7 +4,7 @@ This is a library to use Stargazer by Hagisonic (http://www.hagisonic.com/), loc
 
 USB-Serial connection depends on usb-serial-for-android https://github.com/mik3y/usb-serial-for-android.
 
-**This is only for My personal project. Plese don't use for production!**
+**This is only for my personal, small project. Plese don't use for production!**
 
 ## Install Sample App
 https://github.com/maru-n/StargazerForAndroid/raw/master/app/app-release.apk
