@@ -34,6 +34,12 @@ app/build.gradle
  }
 ```
 
+And import it!
+
+```java
+import jp.co.mti.marun.android.stargazer.*;
+```
+
 ### Example code
 
 https://github.com/maru-n/StargazerForAndroid/tree/master/app/src/main/java/jp/co/mti/marun/android/stargazer/example
