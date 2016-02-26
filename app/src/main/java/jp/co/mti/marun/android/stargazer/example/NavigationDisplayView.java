@@ -33,7 +33,7 @@ public class NavigationDisplayView extends SurfaceView implements SurfaceHolder.
     private static final float TRACK_MARKER_RADIUS = 0.05F;
     private static final float LANDMARK_MARKER_RADIUS = 0.05F;
 
-    private static final float DEFAULT_DISPLAY_RANGE = 20F;
+    private static final float DEFAULT_DISPLAY_RANGE = 10F;
     private static final float DISPLAY_MARGIN = 1.5F;
 
     private float displayXmin, displayXmax, displayYmin, displayYmax;
