@@ -33,7 +33,7 @@ public class StargazerMultiIDManager extends StargazerManager {
         try {
             while (( line = stream.readLine()) != null) {
                 String strs[] = line.split("[\\s]+");
-                if (strs[0].equals("#")) {
+                if (strs[0].substring(0,1).equals("#")) {
                     continue;
                 }
                 int markerId = Integer.parseInt(strs[0]);
