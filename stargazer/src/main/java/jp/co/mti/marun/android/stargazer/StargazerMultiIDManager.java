@@ -32,7 +32,7 @@ public class StargazerMultiIDManager extends StargazerManager {
         String line;
         try {
             while (( line = stream.readLine()) != null) {
-                String strs[] = line.split("[\\s]+");
+                String strs[] = line.trim().split("[\\s]+");
                 if (strs[0].substring(0,1).equals("#")) {
                     continue;
                 }
